@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Insurance Professionals of Tennessee - Quote Form</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f5f9ff;
+      color: #003366;
+      margin: 20px;
+    }
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+    header img {
+      max-width: 200px;
+    }
+    h2 {
+      color: #003366;
+    }
+    .section {
+      border: 2px solid #d4af37;
+      padding: 15px;
+      margin-bottom: 20px;
+      border-radius: 8px;
+    }
+    label {
+      display: block;
+      margin-top: 10px;
+    }
+    input, select {
+      width: 100%;
+      padding: 8px;
+      margin-top: 5px;
+    }
+    button {
+      background-color: #003366;
+      color: white;
+      padding: 12px 20px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #d4af37;
+      color: #003366;
+    }
+    #langToggle {
+      padding: 8px 12px;
+      font-size: 0.9rem;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div>
+      <img src="logo.png" alt="Insurance Professionals of Tennessee Logo">
+    </div>
+    <div>
+      <button type="button" id="langToggle">Español</button>
+    </div>
+  </header>
+
+  <h1 id="formTitle">Insurance Quote Request</h1>
+
+  <form id="quoteForm" action="https://formspree.io/f/meoykwea" method="POST">
+    <!-- General Info -->
+    <div class="section">
+      <h2 id="generalInfoTitle">General Information</h2>
+
+      <label>
+        <span id="nameLabel">Name:</span>
+        <input type="text" name="name" required class="small-input">
+      </label>
+
+      <label>
+        <span id="emailLabel">Email:</span>
+        <input type="email" name="email" required class="small-input">
+      </label>
+
+      <label>
+        <span id="phoneLabel">Phone:</span>
+        <input type="tel" name="phone" required class="small-input">
+      </label>
+    </div>
+
+    <!-- Quote Type Selection -->
+    <div class="section">
+      <h2 id="quoteTypeTitle">Select Quote Types</h2>
+      <label>
+        <input type="checkbox" id="wcglCheck">
+        <span id="wcglLabel">Workers Compensation &amp; General Liability</span>
+      </label>
+      <label>
+        <input type="checkbox" id="autoCheck">
+        <span id="autoLabel">Auto Insurance</span>
+      </label>
+      <label>
+        <input type="checkbox" id="homeCheck">
+        <span id="homeLabel">Homeowners Insurance</span>
+      </label>
+    </div>
+
+    <!-- Workers Comp & GL -->
+    <div class="section" id="wcglFields" style="display:none;">
+      <h2 id="wcglTitle">Workers Compensation &amp; General Liability</h2>
+
+      <label>
+        <span id="businessTypeLabel">Type of Business Operation:</span>
+        <input type="text" name="businessType">
+      </label>
+
+      <label>
+        <span id="weeklyPayrollLabel">Weekly Payroll Estimate:</span>
+        <input type="number" id="weeklyPayroll" name="weeklyPayroll">
+      </label>
+
+      <label>
+        <span id="annualPayrollLabel">Annual Payroll (calculated × 40 weeks):</span>
+        <input type="number" id="annualPayroll" name="annualPayroll" readonly>
+      </label>
+
+      <label>
+        <span id="coverageYearsLabel">Years of Continuous Coverage:</span>
+        <select id="coverageYears" name="coverageYears">
+          <option value="0">0</option>
+          <option value="1">1</option>
+          <option value="2">2</option>
+          <option value="3">3</option>
+          <option value="4">4</option>
+          <option value="5+">5+</option>
+        </select>
+      </label>
+    </div>
+
+    <!-- Auto Insurance -->
+    <div class="section" id="autoFields" style="display:none;">
+      <h2 id="autoTitle">Auto Insurance</h2>
+
+      <label>
+        <span id="numDriversLabel">Number of Drivers:</span>
+        <input type="number" id="numDrivers">
+      </label>
+      <div id="driverDetails"></div>
+
+      <label>
+        <span id="numVehiclesLabel">Number of Vehicles:</span>
+        <input type="number" id="numVehicles">
+      </label>
+      <div id="vehicleDetails"></div>
+
+      <h3 id="coverageOptionsTitle">Coverage Options</h3>
+
+      <label>
+        <span id="bodilyInjuryLabel">Bodily Injury Limit (per person/per accident):</span>
+        <select name="bodilyInjury">
+          <option value="">-- Select Limit --</option>
+          <option value="25,000/50,000">$25,000 / $50,000</option>
+          <option value="50,000/100,000">$50,000 / $100,000</option>
+          <option value="100,000/300,000">$100,000 / $300,000</option>
+          <option value="250,000/500,000">$250,000 / $500,000</option>
+          <option value="500,000/500,000">$500,000 / $500,000</option>
+          <option value="1,000,000/1,000,000">$1,000,000 / $1,000,000</option>
+        </select>
+      </label>
+
+      <label>
+        <span id="propertyDamageLabel">Property Damage Limit:</span>
+        <select name="propertyDamage">
+          <option value="">-- Select Limit --</option>
+          <option value="25,000">$25,000</option>
+          <option value="50,000">$50,000</option>
+          <option value="100,000">$100,000</option>
+          <option value="250,000">$250,000</option>
+          <option value="500,000">$500,000</option>
+          <option value="1,000,000">$1,000,000</option>
+        </select>
+      </label>
+
+      <label>
+        <span id="compDeductibleLabel">Comprehensive Deductible:</span>
+        <select name="comprehensiveDeductible">
+          <option value="">-- Select Deductible --</option>
+          <option value="50">$50</option>
+          <option value="100">$100</option>
+          <option value="250">$250</option>
+          <option value="500">$500</option>
+          <option value="1,000">$1,000</option>
+          <option value="2,500">$2,500</option>
+        </select>
+      </label>
+
+      <label>
+        <span id="collisionDeductibleLabel">Collision Deductible:</span>
+        <select name="collisionDeductible">
+          <option value="">-- Select Deductible --</option>
+          <option value="50">$50</option>
+          <option value="100">$100</option>
+          <option value="250">$250</option>
+          <option value="500">$500</option>
+          <option value="1,000">$1,000</option>
+          <option value="2,500">$2,500</option>
+        </select>
+      </label>
+    </div>
+
+    <!-- Homeowners Insurance -->
+    <div class="section" id="homeFields" style="display:none;">
+      <h2 id="homeTitle">Homeowners Insurance</h2>
+
+      <label>
+        <span id="addressLabel">Address:</span>
+        <input type="text" name="address">
+      </label>
+      <iframe id="streetView" width="100%" height="200" style="margin-top:10px;" frameborder="0"></iframe>
+
+      <label>
+        <span id="sqftLabel">Square Footage:</span>
+        <input type="number" name="sqft">
+      </label>
+
+      <label>
+        <span id="yearBuiltLabel">Year Built:</span>
+        <input type="number" name="yearBuilt">
+      </label>
+
+      <label>
+        <span id="storiesLabel">Number of Stories:</span>
+        <input type="number" name="stories">
+      </label>
+
+      <label>
+        <span id="replacementValueLabel">Estimated Replacement Value:</span>
+        <input type="number" name="replacementValue">
+      </label>
+    </div>
+
+    <button type="submit" id="submitBtn">Submit Quote Request</button>
+  </form>
+
+  <script>
+    // --- DOM references ---
+    const wcglCheck = document.getElementById('wcglCheck');
+    const autoCheck = document.getElementById('autoCheck');
+    const homeCheck = document.getElementById('homeCheck');
+    const wcglFields = document.getElementById('wcglFields');
+    const autoFields = document.getElementById('autoFields');
+    const homeFields = document.getElementById('homeFields');
+    const driverDetails = document.getElementById('driverDetails');
+    const vehicleDetails = document.getElementById('vehicleDetails');
+    const numDrivers = document.getElementById('numDrivers');
+    const numVehicles = document.getElementById('numVehicles');
+    const weeklyPayroll = document.getElementById('weeklyPayroll');
+    const annualPayroll = document.getElementById('annualPayroll');
+    const streetView = document.getElementById('streetView');
+    const addressInput = document.querySelector('input[name="address"]');
+    const langToggleBtn = document.getElementById('langToggle');
+
+    // --- Section toggling ---
+    wcglCheck.addEventListener('change', () => {
+      wcglFields.style.display = wcglCheck.checked ? 'block' : 'none';
+    });
+    autoCheck.addEventListener('change', () => {
+      autoFields.style.display = autoCheck.checked ? 'block' : 'none';
+    });
+    homeCheck.addEventListener('change', () => {
+      homeFields.style.display = homeCheck.checked ? 'block' : 'none';
+    });
+
+    // --- Dynamic drivers/vehicles ---
+    numDrivers.addEventListener('input', () => {
+      driverDetails.innerHTML = '';
+      const count = parseInt(numDrivers.value, 10) || 0;
+      for (let i = 0; i < count; i++) {
+        driverDetails.innerHTML += `
+          <label>Driver ${i + 1} Name: <input type="text" name="driverName${i}"></label>
+          <label>Date of Birth: <input type="date" name="driverDOB${i}"></label>
+          <label>License/ID Number: <input type="text" name="driverID${i}"></label>
+        `;
+      }
+    });
+
+    numVehicles.addEventListener('input', () => {
+      vehicleDetails.innerHTML = '';
+      const count = parseInt(numVehicles.value, 10) || 0;
+      for (let i = 0; i < count; i++) {
+        vehicleDetails.innerHTML += `
+          <label>Vehicle ${i + 1} Make/Model/Year: <input type="text" name="vehicle${i}"></label>
+          <label>VIN Number: <input type="text" name="vin${i}"></label>
+        `;
+      }
+    });
+
+    // --- Payroll calculator ---
+    weeklyPayroll.addEventListener('input', () => {
+      const weekly = parseFloat(weeklyPayroll.value) || 0;
+      annualPayroll.value = weekly * 40;
+    });
+
+    // --- Google Street View embed (replace YOUR_API_KEY) ---
+    if (addressInput) {
+      addressInput.addEventListener('blur', (e) => {
+        const address = encodeURIComponent(e.target.value);
+        if (address) {
+          streetView.src =
+            `https://www.google.com/maps/embed/v1/streetview?key=YOUR_API_KEY&location=${address}`;
+        }
+      });
+    }
+
+    // --- Translation dictionary ---
+    const dictionary = {
+      en: {
+        formTitle: "Insurance Quote Request",
+        generalInfoTitle: "General Information",
+        nameLabel: "Name:",
+        emailLabel: "Email:",
+        phoneLabel: "Phone:",
+        quoteTypeTitle: "Select Quote Types",
+        wcglLabel: "Workers Compensation & General Liability",
+        autoLabel: "Auto Insurance",
+        homeLabel: "Homeowners Insurance",
+        wcglTitle: "Workers Compensation & General Liability",
+        businessTypeLabel: "Type of Business Operation:",
+        weeklyPayrollLabel: "Weekly Payroll Estimate:",
+        annualPayrollLabel: "Annual Payroll (calculated × 40 weeks):",
+        coverageYearsLabel: "Years of Continuous Coverage:",
+        autoTitle: "Auto Insurance",
+        numDriversLabel: "Number of Drivers:",
+        numVehiclesLabel: "Number of Vehicles:",
+        coverageOptionsTitle: "Coverage Options",
+        bodilyInjuryLabel: "Bodily Injury Limit (per person/per accident):",
+        propertyDamageLabel: "Property Damage Limit:",
+        compDeductibleLabel: "Comprehensive Deductible:",
+        collisionDeductibleLabel: "Collision Deductible:",
+        homeTitle: "Homeowners Insurance",
+        addressLabel: "Address:",
+        sqftLabel: "Square Footage:",
+        yearBuiltLabel: "Year Built:",
+        storiesLabel: "Number of Stories:",
+        replacementValueLabel: "Estimated Replacement Value:",
+        submitBtn: "Submit Quote Request",
+        langToggle: "Español"
+      },
+      es: {
+        formTitle: "Solicitud de Cotización de Seguro",
+        generalInfoTitle: "Información General",
+        nameLabel: "Nombre:",
+        emailLabel: "Correo Electrónico:",
+        phoneLabel: "Teléfono:",
+        quoteTypeTitle: "Seleccione Tipos de Cotización",
+        wcglLabel: "Workers Compensación y Responsabilidad General",
+        autoLabel: "Seguro de Auto",
+        homeLabel: "Seguro de Casa",
+        wcglTitle: "Workers Compensación y Responsabilidad General",
+        businessTypeLabel: "Tipo de Trabajo:",
+        weeklyPayrollLabel: "Nómina Semanal Estimada:",
+        annualPayrollLabel: "Nómina Anual (calculada × 40 semanas):",
+        coverageYearsLabel: "Años de Cobertura Continua:",
+        autoTitle: "Seguro de Auto",
+        numDriversLabel: "Número de Conductores:",
+        numVehiclesLabel: "Número de Vehículos:",
+        coverageOptionsTitle: "Opciones de Cobertura",
+        bodilyInjuryLabel: "Límite de Danos Corporales (por persona/por accidente):",
+        propertyDamageLabel: "Límite de Daños a la Propiedad:",
+        compDeductibleLabel: "Deducible de Comprehensive:",
+        collisionDeductibleLabel: "Deducible de Colisión:",
+        homeTitle: "Seguro de Casa",
+        addressLabel: "Dirección:",
+        sqftLabel: "Pies Cuadrados:",
+        yearBuiltLabel: "Año de Construcción:",
+        storiesLabel: "Número de Pisos:",
+        replacementValueLabel: "Valor de Reemplazo Estimado:",
+        submitBtn: "Enviar Solicitud de Cotización",
+        langToggle: "English"
+      }
+    };
+
+    // --- Dropdown options (for coverage years only) ---
+    const optionsDict = {
+      en: {
+        coverageYears: [
+          { value: "0", label: "0" },
+          { value: "1", label: "1" },
+          { value: "2", label: "2" },
+          { value: "3", label: "3" },
+          { value: "4", label: "4" },
+          { value: "5+", label: "5+" }
+        ]
+      },
+      es: {
+        coverageYears: [
+          { value: "0", label: "0 años" },
+          { value: "1", label: "1 año" },
+          { value: "2", label: "2 años" },
+          { value: "3", label: "3 años" },
+          { value: "4", label: "4 años" },
+          { value: "5+", label: "5+ años" }
+        ]
+      }
+    };
+
+    function populateDropdown(id, options) {
+      const select = document.getElementById(id);
+      if (!select) return;
+      const currentValue = select.value;
+      select.innerHTML = "";
+      options.forEach(opt => {
+        const option = document.createElement("option");
+        option.value = opt.value;
+        option.textContent = opt.label;
+        select.appendChild(option);
+      });
+      // Try to preserve previous value if still present
+      if (currentValue) {
+        select.value = currentValue;
+      }
+    }
+
+    function translatePage(lang) {
+      const map = dictionary[lang];
+      for (const key in map) {
+        const el = document.getElementById(key);
+        if (el) el.textContent = map[key];
+      }
+      // Update coverage years select labels
+      populateDropdown("coverageYears", optionsDict[lang].coverageYears);
+    }
+
+    let currentLang = "en";
+    translatePage("en");
+
+    langToggleBtn.addEventListener("click", () => {
+      currentLang = currentLang === "en" ? "es" : "en";
+      translatePage(currentLang);
+    });
+  </script>
+</body>
+</html>
