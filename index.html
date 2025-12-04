@@ -221,14 +221,37 @@
       box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);
     }
 
+    .disclaimer {
+      margin-top: 10px;
+      font-size: 0.78rem;
+      color: var(--ipt-muted);
+      line-height: 1.4;
+    }
+
+    /* Currency input styling */
+    .currency-input {
+      position: relative;
+      margin-top: 6px;
+      display: flex;
+      align-items: center;
+    }
+
+    .currency-input .currency-symbol {
+      position: absolute;
+      left: 10px;
+      color: var(--ipt-muted);
+      font-size: 0.9rem;
+      pointer-events: none;
+    }
+
+    .currency-input input {
+      padding-left: 22px; /* make room for $ */
+    }
+
     /* Address autocomplete styles */
     .address-wrapper {
       position: relative;
       margin-top: 12px;
-    }
-
-    #address-input {
-      /* same general input styling; width already 100% from input{} */
     }
 
     #address-suggestions {
@@ -318,7 +341,7 @@
       </div>
     </header>
 
-    <form action="https://formspree.io/f/yourFormID" method="POST">
+    <form action="https://formspree.io/f/yourFormID" method="POST" enctype="multipart/form-data">
       <!-- Customer Info -->
       <div class="form-section">
         <p class="form-section-title" data-i18n="customerInfoTitle">Customer Information</p>
@@ -364,6 +387,30 @@
         </label>
         <input type="text" id="carrier" name="carrier" required placeholder="Insurance carrier name">
 
+        <!-- Policy Number field -->
+        <label for="policyNumber">
+          <span data-i18n="labelPolicyNumber">Policy Number</span>
+        </label>
+        <input type="text" id="policyNumber" name="policy_number" placeholder="Policy number">
+
+        <!-- Agent Name dropdown -->
+        <label for="agentName">
+          <span data-i18n="labelAgentName">Agent Name</span>
+        </label>
+        <select id="agentName" name="agent_name">
+          <option value="" data-i18n="agentSelectPlaceholder">Select an agent</option>
+          <option value="Kurt Derwenskus">Kurt Derwenskus</option>
+          <option value="Joe Bars">Joe Bars</option>
+          <option value="Don Roy">Don Roy</option>
+          <option value="Danny Hunt">Danny Hunt</option>
+          <option value="John O'Brien">John O'Brien</option>
+          <option value="Luisa Gutierrez">Luisa Gutierrez</option>
+          <option value="Klaine Freeman">Klaine Freeman</option>
+          <option value="Zach Leonardo">Zach Leonardo</option>
+          <option value="James Davis">James Davis</option>
+          <option value="Matthew Derwenskus">Matthew Derwenskus</option>
+        </select>
+
         <div class="checkbox-group">
           <legend data-i18n="policyTypesTitle">Policy Types to Pay</legend>
           <p class="form-section-subtitle" data-i18n="policyTypesSubtitle">
@@ -379,7 +426,7 @@
           </label>
           <label>
             <input type="checkbox" name="policy_types" value="business">
-            <span data-i18n="policyBusiness">Business / Commercial</span>
+            <span data-i18n="policyBusiness">Business Owners Policy</span>
           </label>
           <label>
             <input type="checkbox" name="policy_types" value="workersComp">
@@ -398,7 +445,17 @@
         <label for="amount">
           <span data-i18n="labelAmount">Payment Amount</span>
         </label>
-        <input type="number" id="amount" name="payment_amount" required step="0.01" min="0" placeholder="0.00">
+        <div class="currency-input">
+          <span class="currency-symbol">$</span>
+          <input
+            type="text"
+            id="amount"
+            name="payment_amount"
+            required
+            inputmode="decimal"
+            placeholder="0.00"
+          >
+        </div>
       </div>
 
       <hr class="section-divider">
@@ -459,8 +516,26 @@
         </div>
       </div>
 
+      <hr class="section-divider">
+
+      <!-- Upload Bill -->
+      <div class="form-section">
+        <label for="billUpload">
+          <span data-i18n="labelBillUpload">Upload a copy of your bill (optional)</span>
+        </label>
+        <input
+          type="file"
+          id="billUpload"
+          name="bill_upload"
+          accept=".pdf,.jpg,.jpeg,.png,.gif"
+        >
+      </div>
+
       <!-- Submit -->
       <button type="submit" id="submitBtn" data-i18n="submitBtn">Submit Billing Request</button>
+      <p class="disclaimer" data-i18n="billingDisclaimer">
+        By submitting this request, you are providing our agency with your billing information so we can process the payment on the insured's behalf within one business day. You have not made a direct payment to your insurance carrier.
+      </p>
     </form>
   </div>
 
@@ -657,10 +732,13 @@
       labelName: "Customer Name",
       labelAddress: "Billing Address",
       labelCarrier: "Carrier to Pay",
+      labelPolicyNumber: "Policy Number",
+      labelAgentName: "Agent Name",
+      agentSelectPlaceholder: "Select an agent",
       labelAmount: "Payment Amount",
       policyAuto: "Auto",
       policyHome: "Home",
-      policyBusiness: "Business / Commercial",
+      policyBusiness: "Business Owners Policy",
       policyWorkersComp: "Workers Compensation",
       policyGeneralLiability: "General Liability",
       policyOther: "Other",
@@ -672,7 +750,10 @@
       expDateLabel: "Expiration Date",
       securityCodeLabel: "Security Code",
       billingZipLabel: "Billing ZIP Code",
-      submitBtn: "Submit Billing Request"
+      labelBillUpload: "Upload a copy of your bill (optional)",
+      submitBtn: "Submit Billing Request",
+      billingDisclaimer:
+        "By submitting this request, you are providing our agency with your billing information so we can process the payment on the insured's behalf within one business day. You have not made a direct payment to your insurance carrier."
     };
 
     const spanish = {
@@ -691,10 +772,13 @@
       labelName: "Nombre del Cliente",
       labelAddress: "Dirección de Facturación",
       labelCarrier: "Compañía a Pagar",
+      labelPolicyNumber: "Número de Póliza",
+      labelAgentName: "Nombre del Agente",
+      agentSelectPlaceholder: "Seleccione un agente",
       labelAmount: "Monto del Pago",
       policyAuto: "Auto",
       policyHome: "Casa",
-      policyBusiness: "Negocios / Comercial",
+      policyBusiness: "Póliza para Dueños de Negocios",
       policyWorkersComp: "Compensación para Trabajadores",
       policyGeneralLiability: "Responsabilidad General",
       policyOther: "Otro",
@@ -706,7 +790,10 @@
       expDateLabel: "Fecha de Vencimiento",
       securityCodeLabel: "Código de Seguridad",
       billingZipLabel: "Código Postal de Facturación",
-      submitBtn: "Enviar Información de Pago"
+      labelBillUpload: "Cargue una copia de su factura (opcional)",
+      submitBtn: "Enviar Información de Pago",
+      billingDisclaimer:
+        "Al enviar esta solicitud, usted está proporcionando a nuestra agencia su información de pago para que podamos procesar el pago en nombre del asegurado dentro de un día hábil. Usted no ha realizado un pago directo a su compañía de seguros."
     };
 
     function applyTranslations(dict) {
@@ -728,6 +815,57 @@
 
     // Initialize in English
     applyTranslations(english);
+
+    // --- Currency formatting for Payment Amount (USD) ---
+    const amountInput = document.getElementById('amount');
+
+    if (amountInput) {
+      // Allow only digits and a single decimal point while typing
+      amountInput.addEventListener('input', () => {
+        let value = amountInput.value;
+
+        // Remove all characters except digits and decimal point
+        value = value.replace(/[^0-9.]/g, '');
+
+        // Keep only the first decimal point
+        const parts = value.split('.');
+        if (parts.length > 2) {
+          value = parts[0] + '.' + parts.slice(1).join('');
+        }
+
+        // Limit to two decimal places if present
+        const decimalIndex = value.indexOf('.');
+        if (decimalIndex !== -1) {
+          const integerPart = value.slice(0, decimalIndex);
+          const decimalPart = value.slice(decimalIndex + 1, decimalIndex + 3);
+          value = integerPart + '.' + decimalPart;
+        }
+
+        amountInput.value = value;
+      });
+
+      // On focus, remove commas to make editing easier
+      amountInput.addEventListener('focus', () => {
+        amountInput.value = amountInput.value.replace(/,/g, '');
+      });
+
+      // On blur, format as US currency (no $ in value, but commas + 2 decimals)
+      amountInput.addEventListener('blur', () => {
+        let value = amountInput.value.replace(/,/g, '');
+        if (!value) return;
+
+        const num = parseFloat(value);
+        if (isNaN(num)) {
+          amountInput.value = '';
+          return;
+        }
+
+        amountInput.value = num.toLocaleString('en-US', {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2
+        });
+      });
+    }
   </script>
 </body>
 </html>
