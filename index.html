@@ -221,6 +221,49 @@
       box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);
     }
 
+    /* Address autocomplete styles */
+    .address-wrapper {
+      position: relative;
+      margin-top: 12px;
+    }
+
+    #address-input {
+      /* same general input styling; width already 100% from input{} */
+    }
+
+    #address-suggestions {
+      position: absolute;
+      top: calc(100% + 2px);
+      left: 0;
+      z-index: 1000;
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      background-color: #ffffff;
+      border: 1px solid #c3cfe2;
+      max-height: 220px;
+      overflow-y: auto;
+      box-sizing: border-box;
+      width: 100%;
+      border-radius: 6px;
+      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+    }
+
+    #address-suggestions li {
+      padding: 8px 10px;
+      cursor: pointer;
+      font-size: 0.9rem;
+      border-bottom: 1px solid #eef2fb;
+    }
+
+    #address-suggestions li:last-child {
+      border-bottom: none;
+    }
+
+    #address-suggestions li:hover {
+      background-color: #f3f6ff;
+    }
+
     /* Mobile tweaks */
     @media (max-width: 700px) {
       .page-container {
@@ -288,10 +331,23 @@
         </label>
         <input type="text" id="name" name="customer_name" required placeholder="First and last name">
 
-        <label for="address">
-          <span data-i18n="labelAddress">Billing Address</span>
-        </label>
-        <input type="text" id="address" name="billing_address" required placeholder="Street, City, State, ZIP">
+        <!-- Billing Address with autocomplete -->
+        <div class="address-wrapper">
+          <label for="address-input">
+            <span data-i18n="labelAddress">Billing Address</span>
+          </label>
+          <input
+            type="text"
+            id="address-input"
+            name="billing_address"
+            autocomplete="off"
+            placeholder="Start typing your address..."
+            required
+          >
+          <ul id="address-suggestions"></ul>
+          <input type="hidden" id="address-lat" name="billing_address_lat">
+          <input type="hidden" id="address-lon" name="billing_address_lon">
+        </div>
       </div>
 
       <hr class="section-divider">
@@ -461,6 +517,128 @@
     methodEft.addEventListener('change', updatePaymentVisibility);
     methodCard.addEventListener('change', updatePaymentVisibility);
     updatePaymentVisibility();
+
+    // --- Address autocomplete using maps.co ---
+    const addressInput = document.getElementById('address-input');
+    const addressSuggestions = document.getElementById('address-suggestions');
+    const addressLatField = document.getElementById('address-lat');
+    const addressLonField = document.getElementById('address-lon');
+
+    const MAPSCO_API_KEY = "6930d4d437fad769672610qmbb9060f"; // <-- replace with your maps.co key
+    let addressDebounceTimeout = null;
+
+    // Format address as: house number, street name, city, state, zip
+    function formatShortAddress(item) {
+      const addr = item.address || {};
+
+      const streetParts = [];
+      if (addr.house_number) streetParts.push(addr.house_number);
+      if (addr.road) streetParts.push(addr.road);
+
+      const city =
+        addr.city ||
+        addr.town ||
+        addr.village ||
+        addr.hamlet ||
+        addr.municipality ||
+        "";
+
+      const state = addr.state || addr.state_code || "";
+      const zip = addr.postcode || "";
+
+      const parts = [];
+
+      if (streetParts.length) parts.push(streetParts.join(" "));
+      if (city) parts.push(city);
+      if (state) parts.push(state);
+      if (zip) parts.push(zip);
+
+      if (!parts.length && item.display_name) {
+        return item.display_name; // fallback
+      }
+
+      return parts.join(", ");
+    }
+
+    function clearAddressSuggestions() {
+      if (addressSuggestions) {
+        addressSuggestions.innerHTML = "";
+      }
+    }
+
+    function showAddressSuggestions(results) {
+      clearAddressSuggestions();
+      if (!Array.isArray(results) || results.length === 0 || !addressSuggestions) return;
+
+      results.forEach(item => {
+        const li = document.createElement("li");
+        const shortAddress = formatShortAddress(item);
+
+        li.textContent = shortAddress;
+        li.dataset.lat = item.lat;
+        li.dataset.lon = item.lon;
+
+        li.addEventListener("click", () => {
+          if (addressInput) {
+            addressInput.value = shortAddress;
+          }
+          if (addressLatField) addressLatField.value = item.lat || "";
+          if (addressLonField) addressLonField.value = item.lon || "";
+          clearAddressSuggestions();
+        });
+
+        addressSuggestions.appendChild(li);
+      });
+    }
+
+    function fetchAddressSuggestions(query) {
+      if (!MAPSCO_API_KEY) return;
+
+      const url =
+        "https://geocode.maps.co/search" +
+        "?q=" + encodeURIComponent(query) +
+        "&api_key=" + encodeURIComponent(MAPSCO_API_KEY) +
+        "&limit=5" +
+        "&countrycodes=us";
+
+      fetch(url)
+        .then(response => response.json())
+        .then(data => {
+          showAddressSuggestions(data);
+        })
+        .catch(error => {
+          console.error("Error fetching addresses:", error);
+          clearAddressSuggestions();
+        });
+    }
+
+    if (addressInput) {
+      addressInput.addEventListener("input", () => {
+        const query = addressInput.value.trim();
+        clearTimeout(addressDebounceTimeout);
+
+        if (query.length < 3) {
+          clearAddressSuggestions();
+          return;
+        }
+
+        addressDebounceTimeout = setTimeout(() => {
+          fetchAddressSuggestions(query);
+        }, 300);
+      });
+    }
+
+    // Hide suggestions when clicking outside the address area
+    document.addEventListener("click", (event) => {
+      if (
+        addressInput &&
+        addressSuggestions &&
+        !addressInput.contains(event.target) &&
+        !addressSuggestions.contains(event.target)
+      ) {
+        clearAddressSuggestions();
+      }
+    });
 
     // Translation dictionaries
     const english = {
